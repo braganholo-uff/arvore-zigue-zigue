@@ -1,6 +1,10 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <string.h>
+#include <limits.h>
+
+#define MAX_NOS 255
+#define VAZIO INT_MIN //valor usado internamente para marcar os nos informados como * (subarvore vazia)
 
 typedef struct sNoA {
     int chave;
@@ -27,21 +31,58 @@ void imprime(TNoA *nodo, int tab) {
     } else printf("vazio");
 }
 
-TNoA *insere(TNoA *no, int chave) {
-    if (no == NULL) {
-        no = (TNoA *) malloc(sizeof(TNoA));
-        no->chave = chave;
-        no->esq = NULL;
-        no->dir = NULL;
-    } else if (chave < (no->chave))
-        no->esq = insere(no->esq, chave);
-    else if (chave > (no->chave)) {
-        no->dir = insere(no->dir, chave);
+void imprimeProfundidade(TNoA *nodo, int altura) {
+    altura = altura - 1;
+    if (nodo != NULL) {
+        printf("%d", nodo->chave);
+        if (altura > 0) {
+            printf("-");
+            imprimeProfundidade(nodo->esq, altura);
+            printf("-");
+            imprimeProfundidade(nodo->dir, altura);
+        }
     } else {
-        printf("Inserção inválida! ");
-        exit(1);
+        printf("*");
+        //Trata caso de subarvore NULL em nível menor que altura da árvore
+        if (altura > 0) {
+            printf("-");
+            imprimeProfundidade(NULL, altura);
+            printf("-");
+            imprimeProfundidade(NULL, altura);
+        }
     }
-    return no;
+}
+
+TNoA *criaArvore(int entrada[MAX_NOS], int tamanho) {
+    int novaEntrada[MAX_NOS];
+    int i, j;
+    TNoA *novo;
+    novo = NULL;
+    if ((tamanho > 0) && (entrada[0] != VAZIO)) {
+        novo = (TNoA *) malloc(sizeof(TNoA));
+        novo->chave = entrada[0];
+        tamanho = tamanho / 2;
+
+        //divide a entrada em duas partes e chama a função criaArvore recursivamente
+        i = 1; //inicio da subarvore esquerda no vetor entrada
+        j = 0; //cursor do novo vetor de entrada que conterá apenas a subárvore desejada
+        while (i <= tamanho) {
+            novaEntrada[j] = entrada[i];
+            i++;
+            j++;
+        }
+        novo->esq = criaArvore(novaEntrada, tamanho);
+
+        i = tamanho + 1; //inicio da subarvore direita no vetor entrada
+        j = 0; //cursor do novo vetor de entrada que conterá apenas a subárvore desejada
+        while (i <= tamanho * 2) {
+            novaEntrada[j] = entrada[i];
+            i++;
+            j++;
+        }
+        novo->dir = criaArvore(novaEntrada, tamanho);
+    }
+    return novo;
 }
 
 int main(void) {
@@ -53,22 +94,32 @@ int main(void) {
     TNoA *raiz;
     raiz = NULL;
 
-    char l[100];
+    char l[1000];
     char delimitador[] = "-";
     char *ptr;
-    int valor;
+    int entrada[MAX_NOS];
+    int tam;
 
-    /* lê valores para criar a arvore
-     * valores devem ser informados separados por traço
-     * exemplo: 1-3-5-2-7-9-21-6 */
+    /* lê valores para criar a arvore, usando a notação do percurso em profundidade
+     * de uma árvore cheia. Os valores devem ser informados separados por traço e
+     * os nós vazios devem ser representados por *
+     * exemplo: 400-300-150-*-200-*-*-*-*-*-*-*-*-*-* */
     scanf("%s", l);
+
     //quebra a string de entrada
+    tam = 0;
     ptr = strtok(l, delimitador);
-    while(ptr != NULL) {
-        valor = atoi(ptr);
-        raiz = insere(raiz, valor);
+    while ((ptr != NULL) && (tam < MAX_NOS)) {
+        if (ptr[0] == '*') {
+            entrada[tam] = VAZIO;
+        } else {
+            entrada[tam] = atoi(ptr);
+        }
+        tam++;
         ptr = strtok(NULL, delimitador);
     }
+
+    raiz = criaArvore(entrada, tam);
 
     //Chama função
     printf("%d", ehZigueZague(raiz));
