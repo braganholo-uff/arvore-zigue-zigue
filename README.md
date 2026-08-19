@@ -1,6 +1,6 @@
 #### Problema 
 
-Implemente a função int ehZigueZague(TNoA *raiz)  que recebe um ponteiro para a raiz de uma árvore binária de busca e retorna um inteiro (1 se a árvore é zigue-zague, 0 caso contrário). 
+Implemente a função int ehZigueZague(TNoA *raiz)  que recebe um ponteiro para a raiz de uma árvore binária e retorna um inteiro (1 se a árvore é zigue-zague, 0 caso contrário). 
 
 Use o arquivo fornecido nesse exercício, pois ele já contém o tratamento de entrada e saída. 
 
