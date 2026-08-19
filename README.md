@@ -19,6 +19,7 @@ A árvore deve ser informada como se fosse uma árvore cheia (por exemplo, para 
 |Entrada|Saída|
 |---|---| 
 |100-200-20|0|
+|400-\*-\*-\*-500-450-\*|1|
 |400-300-150-\*-200-\*-\*-\*-\*-\*-\*-\*-\*-\*-\*|1|
 
 #### Dicas Importantes:
